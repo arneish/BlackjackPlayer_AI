@@ -14,6 +14,7 @@
 #define HAS_PAIR 2
 #define MAX_HAND_VALUE 21
 #define MAX_DEALER_CARD 10
+#define MAX_NUM_ACES 21
 
 using namespace std;
 
@@ -28,18 +29,16 @@ class BlackJackState
     bool hasDoubledPlayer;
     bool hasSplitPlayer;
     bool hasSplitAcePlayer;
-    bool hasAcePlayer;
-    bool hasPairPlayer;
     vector<int> cardsPlayer;
     vector<BlackJackState *> children;
 
 
+    bool hasAcePlayer;
+    bool hasPairPlayer;
+    int handValuePlayer;
 
 
-    BlackJackState(int numCardsPlayer, int numTurnsPlayedPlayer, bool hasDoubledPlayer, bool hasSplitPlayer,
-                   bool hasSplitAcePlayer, bool hasAcePlayer, bool hasPairPlayer, const vector<int> &cardsPlayer,
-                   const vector<BlackJackState *> &children, int numCardsDealer, int valueCardsDealer,
-                   bool hasAceDealer, bool dealerToPlay, const vector<int> &cardsDealer, double betPlayer);
+
     inline bool canSplit()
     {
         if (hasPairPlayer)
@@ -75,7 +74,9 @@ class BlackJackAgent
 {
   public:
     double probability;
-    BlackJackState *initialStateMap[HAS_ACE][HAS_PAIR][MAX_HAND_VALUE + 1][MAX_DEALER_CARD + 1]; //hasAce, hasPair, handValue, dealerCard - contains Null also
+    // indexing always begins from 1 in the bottom
+    //numAces, hasPair, handValue, dealerCard - contains Null also
+    BlackJackState *initialStateMap[MAX_NUM_ACES + 1][HAS_PAIR][MAX_HAND_VALUE + 1][MAX_DEALER_CARD + 1];
     /*initalize in constructor [dealer][player_i][player_j]
       null for any index = 1, and null for player_j < player_i*/
     void constructPolicyGraph();
