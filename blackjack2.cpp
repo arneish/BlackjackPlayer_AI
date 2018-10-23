@@ -1,7 +1,6 @@
-#include "blackjack.h"
+#include "blackjack2.h"
 
 using namespace std;
-
 
 
 pair<int, int> BlackJackState::getValueHandPlayer()
@@ -20,30 +19,20 @@ pair<int, int> BlackJackState::getValueHandPlayer()
     }
 }
 
-bool BlackJackState::isBustedPlayer()
-{
-    pair<int, int> values = getValueHandPlayer();
-    return values.second > 21;
+bool BlackJackState::isBustedPlayer() {
+    return handValuePlayer > 21;
 }
 
-bool BlackJackState::isBlackjackPlayer()
-{
-    int numAces = count(cardsPlayer.begin(), cardsPlayer.end(), 0);
-    int numFaces = count(cardsPlayer.begin(), cardsPlayer.end(), 10);
-    return numAces == 1 && numFaces == 1 && cardsPlayer.size() == 2;
+bool BlackJackState::isBustedDealer() {
+   return handValueDealer > 21;
 }
 
-bool BlackJackState::isBustedDealer()
-{
-    pair<int, int> values = getValueHandDealer();
-    return values.second > 21;
+bool BlackJackState::isBlackjackPlayer() {
+    return numAcesPlayer == 1 && handValuePlayer == 21 && numCardsPlayer == 2;
 }
 
-bool BlackJackState::isBlackjackDealer()
-{
-    int numAces = count(cardsDealer.begin(), cardsDealer.end(), 0);
-    int numFaces = count(cardsDealer.begin(), cardsDealer.end(), 10);
-    return numAces == 1 && numFaces == 1 && cardsDealer.size() == 2;
+bool BlackJackState::isBlackjackDealer() {
+    return dealerVisibleCard == 1 && handValueDealer == 21 && numCardsDealer == 2;
 }
 
 int BlackJackState::getActionDealer()
@@ -81,88 +70,79 @@ double BlackJackState::endGame(int bustedPerson = -1)
     }
 }
 
-void BlackJackAgent::constructPolicyGraph()
-{
-    //construct initial states
-    for (int dealer_it = 0; dealer_it < 11; dealer_it++)
-    {
-        if (dealer_it != 1)
-        {
-            for (int player_i = 0; player_i < 11; player_i++)
-            {
-                if (player_i != 1)
-                {
-                    for (int player_j = player_i; player_j < 11; player_j++)
-                    {
-                        if (player_j != 1)
-                        {
-                            BlackJackState *State = new BlackJackState(); //TODO: put in values for this constructor
-                            initialStates[dealer_it][player_i][player_j] = State;
-                        }
+int calcHandValue(int player_i, int player_j) {
+    if(player_i == player_j && player_i == 1)
+        return 12;
+    return player_i + player_j;
+}
+
+void BlackJackAgent::constructPolicyGraph() {
+    //construct initial state
+    for(int i = 0; i < 2; i++) {
+        for(int j = 0; j < 2; j++){
+            if(i==0 && j==0) {
+                for(int player_it = 5; player_it <= 19; player_it++) {
+                    for(int dealer_it = 1; dealer_it <= 10; dealer_it++) {
+                        BlackJackState *state = new BlackJackState();
+
                     }
                 }
             }
-        }
-    }
-    for (int dealer_it = 0; dealer_it < 11; dealer_it++)
-    {
-        if (dealer_it != 1)
-        {
-            for (int player_i = 0; player_i < 11; player_i++)
-            {
-                if (player_i != 1)
-                {
-                    for (int player_j = player_i; player_j < 11; player_j++)
-                    {
-                        if (player_j != 1)
-                        {
-                            constructStateSpace(initialStates[dealer_it][player_i][player_j]);
-                        }
-                    }
-                }
+
+            if(i==0 && j==1) {
+
+            }
+
+            if(i==1 && j==0) {
+
+            }
+
+            if(i==1 && j==1) {
+
             }
         }
     }
+
+    for(int i = 0; i < MAX_NUM_ACES + 1; i++)
+        for(int j = 0; j < HAS_PAIR; j++)
+            for(int k = 0; k < MAX_HAND_VALUE; k++)
+                for(int l = 0; l < MAX_DEALER_CARD; l++)
+                    constructStateSpace(initialStateMap[i][j][k][l]);
 }
 
 void BlackJackAgent::constructStateSpace(BlackJackState *state)
 {
     // check terminals
-    if (state->isBustedPlayer() || state->isBustedDealer() || state->isBlackjackPlayer() || state->isBlackjackDealer())
-    {
+    if (state->isBustedPlayer() || state->isBustedDealer() || state->isBlackjackPlayer() || state->isBlackjackDealer()) {
+        state->stateValue = 0;
         state->isTerminalState = true;
         return;
     }
-    // hit
-    for (int i = 0; i < 11; i++)
-    {
-        if (i != 1)
-        {
-            BlackJackState *child = new BlackJackState(state);
-            child->executeHitPlayer(i);
-            state->children.emplace_back(child);
-            constructStateSpace(child);
-        }
-    }
-    // stand
-    executeDealerPolicy();
-    // double
-    if (state->canDouble())
-    {
-        for (int i = 0; i < 11; i++)
-        {
-            if (i != 1)
-            {
-                BlackJackState *child = new BlackJackState(state);
-                child->betPlayer *= 2;
-                child->executeHitPlayer(i);
-                state->children.emplace_back(child);
-                executeDealerPolicy();
-            }
-        }
-    }
-    //split
-    if (state->canSplit())
-    {
+
+    vector<char> possibleActions = getPossibleActions(state);
+
+    for(char action : possibleActions)
+        executeMove(action);
+
+}
+
+vector<char> BlackJackAgent(BlackJackState* state){
+
+}
+
+void BlackJackAgent::executeMove(char moveType) {
+    switch(moveType){
+        case 'H':
+            break;
+        case 'S':
+            break;
+        case 'D':
+            break;
+        case 'P':
+            break;
+        default:
+            return;
     }
 }
+
+
