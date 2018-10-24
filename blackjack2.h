@@ -36,15 +36,19 @@ public:
   int AceStateDealer;
 
   double rewardOnReachingState;
-  double stateValue;
+  pair<double,double> stateValue; //<oldStateval, newStateval>
   bool isTerminalState;
   bool isVisited;
   bool isBlackJackPlayer;
   vector<BlackJackState *> children;
   vector<BlackJackState *> standChildren;
+  vector<BlackJackState*> splitChildren;
+  vector<BlackJackState*> splitAceChildren;
   vector<int> allActions;
-  vector<double> Q_action;
+  unordered_map<int, pair<double, double>> Qvalmap; //<action,<old_Qval, new_Qval>>
 
+  //vector<double> Q_action;
+  
 //  bool isBustedPlayer();
 //  bool isBustedDealer();
   bool isBlackjackPlayer();
@@ -70,4 +74,5 @@ public:
   void createNextPlayerState(BlackJackState *curState, int newPlayerHand, int AceStateChild, int isPairChild);
   void executeMove(BlackJackState* curState,int action, int PlayerID);
   void getPossibleActions(BlackJackState *curState, int PlayerID);
+  void executeValueIteration();
 };
