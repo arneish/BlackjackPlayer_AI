@@ -21,9 +21,18 @@ void BlackJackAgent::executeValueIteration()
         BlackJackState* curState = playerState.second;
         for (auto&action: curState->allActions)
         {
-            curState->
+            if (action==HIT)
+            {
+                curState->Qvalmap[action]=0;
+                /*iterate over all HIT-children and add old state values*/
+                for (auto&hitChildState: children)
+                {
+                    if (hitChildState- )
+                    curState->Qvalmap[action]+=hitChildState->stateValue.first;
+
+                }
+            }
         }
-    
     }
     
 
