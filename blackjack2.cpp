@@ -7,7 +7,28 @@ using namespace std;
 
 void BlackJackAgent::executeValueIteration()
 {
+    /*initialise V to 0 for non-terminal states*/
+    for (auto&playerState: keyToState)
+    {
+        playerState.second->stateValue.first = 0;
+    }
+    for (auto&dealerState: keyToStateDealer)
+    {
+        dealerState.second->stateValue.first = 0;
+    }
+    for (auto&playerState: keyToState)
+    {
+        BlackJackState* curState = playerState.second;
+        for (auto&action: curState->allActions)
+        {
+            curState->
+        }
     
+    }
+    
+
+
+
 }
 
 void BlackJackAgent::createNextDealerState(BlackJackState *parentState, int newDealerHand, bool isBlackJackDealer, int AceStateChild)
