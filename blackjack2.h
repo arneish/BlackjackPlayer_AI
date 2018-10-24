@@ -32,10 +32,10 @@ public:
     bool isTerminalState;
     bool isVisited;
     bool isBlackJackPlayer;
-    vector<BlackJackState*> children;
-    vector<BlackJackState*> standChildren;
-    vector<BlackJackState*> splitChildren;
-    vector<BlackJackState*> splitAceChildren;
+    vector<pair<BlackJackState*, double>> children;
+    vector<pair<BlackJackState*, double>> standChildren;
+    vector<BlackJackState*, double>> splitChildren;
+    vector<BlackJackState*, double>> splitAceChildren;
     vector<int> allActions;
     double rewardOnReachingState;
     pair<double,double> stateValues; //<oldStateval, newStateval>
