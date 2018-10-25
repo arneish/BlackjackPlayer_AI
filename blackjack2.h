@@ -64,5 +64,8 @@ public:
     void executeMove(BlackJackState* curState,int action, int PlayerID);
     void getPossibleActions(BlackJackState *curState, int PlayerID);
     void executeValueIteration();
+    void printPolicy();
+    char getActionChar(int action);
+    int getRow(BlackJackState* initState);
     BlackJackAgent() {probability = 4.0/13.0;}
 };
