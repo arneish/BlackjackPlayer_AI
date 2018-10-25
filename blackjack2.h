@@ -59,7 +59,7 @@ public:
     void initStates(int NumAces, int NumPairs, int player_it);
     void createTerminalStates();
     void constructStateSpace(BlackJackState *curState, int PlayerID);
-    void createNextDealerState(BlackJackState *parentState, int newDealerHand, bool isBlackJack, int AceStateChild, double probChildState);
+    void createNextDealerState(BlackJackState *parentState, int newDealerHand, bool isBlackJack, int AceStateChild, double probChildState, bool isPlayerStand);
     void createNextPlayerState(BlackJackState *curState, int newPlayerHand, int AceStateChild, int isPairChild, double probChildState);
     void executeMove(BlackJackState* curState,int action, int PlayerID);
     void getPossibleActions(BlackJackState *curState, int PlayerID);

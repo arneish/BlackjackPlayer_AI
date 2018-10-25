@@ -16,11 +16,11 @@ int main(int argc, char* argv[]) {
 
     agent.printPolicy();
 
-    for(auto state: agent.keyToStateDealer){
-        if(state.second->standChildren.size()) {
-            cout << state.first << " " << state.second->standChildren.at(0).first->isTerminalState  << endl;
-        }
-    }
+//    for(auto state: agent.keyToStateDealer){
+//        if(state.second->standChildren.size()) {
+//            cout << state.first << " " << state.second->standChildren.at(0).first->isTerminalState  << endl;
+//        }
+//    }
 
     return 1;
 }
