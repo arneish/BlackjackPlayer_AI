@@ -67,5 +67,6 @@ public:
     void printPolicy();
     char getActionChar(int action);
     int getRow(BlackJackState* initState);
+    string getRowName(BlackJackState* state);
     BlackJackAgent() {probability = 4.0/13.0;}
 };

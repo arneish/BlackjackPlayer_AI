@@ -30,11 +30,28 @@ int BlackJackAgent::getRow(BlackJackState* initState) {
         return initState->handValuePlayer + 2;
 }
 
+string BlackJackAgent::getRowName(BlackJackState* state) {
+    if(state->AceStatePlayer == NO_ACE && !state->isPair) {
+        return to_string(state->handValuePlayer);
+    }
+    else if(state->AceStatePlayer == SOFT_HAND && state->isPair){
+        return "AA";
+    }
+    else if(state->AceStatePlayer == SOFT_HAND && !state->isPair){
+        return "A" + to_string(state->handValuePlayer - 11);
+    }
+    else if(state->AceStatePlayer == NO_ACE && state->isPair){
+        return to_string(state->handValuePlayer/2) + to_string(state->handValuePlayer/2);
+    }
+}
+
 void BlackJackAgent::printPolicy() {
     char policyArray[33][10];
-
+    string rowNames[33];
 
     for(auto& state: allInitStates) {
+        if(state->handValuePlayer == 21)
+            continue;
         int bestAction;
         double bestQVal = -DBL_MAX;
         for(auto& action: state->allActions) {
@@ -43,10 +60,14 @@ void BlackJackAgent::printPolicy() {
                 bestAction = action;
             }
         }
-        policyArray[getRow(state)][state->handValueDealer-2] = getActionChar(bestAction);
+        int row = getRow(state);
+        string rowName = getRowName(state);
+        policyArray[row][state->handValueDealer-2] = getActionChar(bestAction);
+        rowNames[row] = rowName;
     }
 
     for(int i = 0; i < 33; i++) {
+        cout << rowNames[i] << "\t";
         for(int j = 0; j < 10; j++)
             cout << policyArray[i][j] << " ";
         cout << endl;
