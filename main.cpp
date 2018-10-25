@@ -8,7 +8,7 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
 
-    BlackJackAgent agent;
+    BlackJackAgent agent(4.0/13.0);
 
     agent.constructPolicyGraph();
 

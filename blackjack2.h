@@ -18,6 +18,7 @@
 #define SOFT_HAND 1
 #define HARD_HAND 2
 
+
 using namespace std;
 
 class BlackJackState
@@ -68,5 +69,5 @@ public:
     char getActionChar(int action);
     int getRow(BlackJackState* initState);
     string getRowName(BlackJackState* state);
-    BlackJackAgent() {probability = 4.0/13.0;}
+    BlackJackAgent(double p) : probability(p) {}
 };

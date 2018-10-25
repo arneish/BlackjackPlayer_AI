@@ -95,7 +95,7 @@ void BlackJackAgent::executeValueIteration()
 
     /*Get Q (NEW) for all actions for all states based on V (OLD) & Q (OLD) values */
     /*Step 1: */
-    int max_iter = 50;
+    int max_iter = 20;
     while (max_iter-- > 0)
     {
         double error = 0.0;
