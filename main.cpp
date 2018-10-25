@@ -12,8 +12,7 @@ int main(int argc, char* argv[]) {
 
     agent.constructPolicyGraph();
 
-    for(auto& state : agent.keyToState)
-        cout << state.first << " " << state.second <<  endl;
+    agent.executeValueIteration();
 
     return 1;
 }
