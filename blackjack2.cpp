@@ -2,43 +2,44 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <iostream>
 
 using namespace std;
 
-void BlackJackAgent::executeValueIteration()
-{
-    /*initialise V to 0 for non-terminal states*/
-    for (auto&playerState: keyToState)
-    {
-        playerState.second->stateValue.first = 0;
-    }
-    for (auto&dealerState: keyToStateDealer)
-    {
-        dealerState.second->stateValue.first = 0;
-    }
-    for (auto&playerState: keyToState)
-    {
-        BlackJackState* curState = playerState.second;
-        for (auto&action: curState->allActions)
-        {
-            if (action==HIT)
-            {
-                curState->Qvalmap[action]=0;
-                /*iterate over all HIT-children and add old state values*/
-                for (auto&hitChildState: children)
-                {
-                    if (hitChildState- )
-                    curState->Qvalmap[action]+=hitChildState->stateValue.first;
-
-                }
-            }
-        }
-    }
-    
-
-
-
-}
+//void BlackJackAgent::executeValueIteration()
+//{
+//    /*initialise V to 0 for non-terminal states*/
+//    for (auto&playerState: keyToState)
+//    {
+//        playerState.second->stateValue.first = 0;
+//    }
+//    for (auto&dealerState: keyToStateDealer)
+//    {
+//        dealerState.second->stateValue.first = 0;
+//    }
+//    for (auto&playerState: keyToState)
+//    {
+//        BlackJackState* curState = playerState.second;
+//        for (auto&action: curState->allActions)
+//        {
+//            if (action==HIT)
+//            {
+//                curState->Qvalmap[action]=0;
+//                /*iterate over all HIT-children and add old state values*/
+//                for (auto&hitChildState: children)
+//                {
+//                    if (hitChildState- )
+//                    curState->Qvalmap[action]+=hitChildState->stateValue.first;
+//
+//                }
+//            }
+//        }
+//    }
+//
+//
+//
+//
+//}
 
 void BlackJackAgent::createNextDealerState(BlackJackState *parentState, int newDealerHand, bool isBlackJackDealer, int AceStateChild)
 {
@@ -81,6 +82,7 @@ void BlackJackAgent::createNextDealerState(BlackJackState *parentState, int newD
 void BlackJackAgent::createNextPlayerState(BlackJackState *parentState, int newPlayerHand, int AceStateChild, int isPairChild)
 {
     string key = to_string(AceStateChild) + "$" + to_string(isPairChild) + "$" + to_string(newPlayerHand) + "$" + to_string(parentState->handValueDealer);
+
     if (keyToState.count(key))
     {
         keyToState[key]->isVisited = true;
@@ -213,24 +215,26 @@ void BlackJackAgent::executeMove(BlackJackState *curState, int action, int Playe
         }
         else if (action == SPLIT_ACE)
         {
-            int newPlayerHand = 11;
-            int AceState = SOFT_HAND;
-            int isPair = false;
             for(int card = 2; card <= 11; card++) {
+                int AceState = SOFT_HAND;
+                int isPair = false;
+                int newPlayerHand = 11;
                 if(card == 10) {
                     AceState = NO_ACE;
                     newPlayerHand += card;
                 }
-                if(card == 11) {
+                else if(card == 11) {
+                    AceState = NO_ACE;
                     newPlayerHand += 1;
                 }
                 else {
                     newPlayerHand += card;
                 }
                 string key = to_string(AceState) + "$" + to_string(isPair) + "$" + to_string(newPlayerHand) + "$" + to_string(curState->handValueDealer);
-                if(card != 10)
-                    curState->splitAceChildren.emplace_back(keyToState[key]);
-                else {
+
+                if(card == 10){
+//                    if(keyToState.count(key) == 0)
+//                        cout << "asd" << endl;
                     BlackJackState *child = new BlackJackState();
                     child->isVisited = false;
                     child->handValueDealer = curState->handValueDealer;
@@ -241,20 +245,28 @@ void BlackJackAgent::executeMove(BlackJackState *curState, int action, int Playe
                     keyToState[key] = child;
                     curState->splitAceChildren.emplace_back(child);
                 }
+                else {
+//                    if(keyToState.count(key) == 0)
+//                        cout << "Weird" << endl;
+                    curState->splitAceChildren.emplace_back(keyToState[key]);
+                }
             }
         }
         else if (action == SPLIT)
         {
-            int newPlayerHand = curState->handValuePlayer/2;
-            int AceState = NO_ACE;
-            int isPair = false;
             for(int card = 2; card <= 11; card++) {
+                int AceState = NO_ACE;
+                int isPair = false;
+                int newPlayerHand = curState->handValuePlayer/2;
                 if(card == 11)
                     AceState = SOFT_HAND;
                 if(card == newPlayerHand)
                     isPair = true;
                 newPlayerHand += card;
                 string key = to_string(AceState) + "$" + to_string(isPair) + "$" + to_string(newPlayerHand) + "$" + to_string(curState->handValueDealer);
+                if(keyToState.count(key) == 0) {
+                    cout << "hi" << endl;
+                }
                 // this state is always present
                 curState->splitChildren.emplace_back(keyToState[key]);
             }
@@ -537,8 +549,17 @@ void BlackJackAgent::constructStateSpace(BlackJackState *curState, int PlayerID)
 
     getPossibleActions(curState, PlayerID);
 
-    for (int action : curState->allActions)
+    int count2 = keyToState.count("1$1$17$8");
+
+    for (int action : curState->allActions) {
         executeMove(curState, action, PlayerID);
+        count2 = keyToState.count("1$1$17$8");
+    }
+
+
+    int count = keyToState.count("0$1$12$8");
+
+//    cout << count2 << endl;
 
     for (BlackJackState *child : curState->children)
     {
