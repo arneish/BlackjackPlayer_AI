@@ -5,6 +5,7 @@
 #include <vector>
 #include <cfloat>
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -66,12 +67,19 @@ void BlackJackAgent::printPolicy() {
         rowNames[row] = rowName;
     }
 
+    ofstream policyFile("Policy.txt");
     for(int i = 0; i < 33; i++) {
-        cout << rowNames[i] << "\t";
-        for(int j = 0; j < 10; j++)
-            cout << policyArray[i][j] << " ";
-        cout << endl;
+        policyFile << rowNames[i] << "\t";
+        for(int j = 0; j < 10; j++) {
+            if(j == 9)
+                policyFile << policyArray[i][j];
+            else
+                policyFile << policyArray[i][j] << " ";
+        }
+        if(i != 32)
+            policyFile << endl;
     }
+    policyFile.close();
 }
 
 
