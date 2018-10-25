@@ -9,97 +9,111 @@
 
 using namespace std;
 
-char BlackJackAgent::getActionChar(int action) {
-    if(action == 1)
+char BlackJackAgent::getActionChar(int action)
+{
+    if (action == 1)
         return 'H';
-    if(action == 2)
+    if (action == 2)
         return 'S';
-    if(action == 3)
+    if (action == 3)
         return 'D';
-    if(action == 4 || action == 5)
+    if (action == 4 || action == 5)
         return 'P';
 }
 
-int BlackJackAgent::getRow(BlackJackState* initState) {
-    if(initState->AceStatePlayer == NO_ACE && !initState->isPair)
-        return initState->handValuePlayer-5;
-    if(initState->isPair && initState->AceStatePlayer == NO_ACE)
-        return initState->handValuePlayer/2 -1 + 22;
-    if(initState->AceStatePlayer == SOFT_HAND && initState->isPair)
+int BlackJackAgent::getRow(BlackJackState *initState)
+{
+    if (initState->AceStatePlayer == NO_ACE && !initState->isPair)
+        return initState->handValuePlayer - 5;
+    if (initState->isPair && initState->AceStatePlayer == NO_ACE)
+        return initState->handValuePlayer / 2 - 1 + 22;
+    if (initState->AceStatePlayer == SOFT_HAND && initState->isPair)
         return 32;
-    if(initState->AceStatePlayer == SOFT_HAND && !initState->isPair)
+    if (initState->AceStatePlayer == SOFT_HAND && !initState->isPair)
         return initState->handValuePlayer + 2;
 }
 
-string BlackJackAgent::getRowName(BlackJackState* state) {
-    if(state->AceStatePlayer == NO_ACE && !state->isPair) {
+string BlackJackAgent::getRowName(BlackJackState *state)
+{
+    if (state->AceStatePlayer == NO_ACE && !state->isPair)
+    {
         return to_string(state->handValuePlayer);
     }
-    else if(state->AceStatePlayer == SOFT_HAND && state->isPair){
+    else if (state->AceStatePlayer == SOFT_HAND && state->isPair)
+    {
         return "AA";
     }
-    else if(state->AceStatePlayer == SOFT_HAND && !state->isPair){
+    else if (state->AceStatePlayer == SOFT_HAND && !state->isPair)
+    {
         return "A" + to_string(state->handValuePlayer - 11);
     }
-    else if(state->AceStatePlayer == NO_ACE && state->isPair){
-        return to_string(state->handValuePlayer/2) + to_string(state->handValuePlayer/2);
+    else if (state->AceStatePlayer == NO_ACE && state->isPair)
+    {
+        return to_string(state->handValuePlayer / 2) + to_string(state->handValuePlayer / 2);
     }
 }
 
-void BlackJackAgent::printPolicy() {
+void BlackJackAgent::printPolicy()
+{
     char policyArray[33][10];
     string rowNames[33];
 
-    for(auto& state: allInitStates) {
-        if(state->handValuePlayer == 21)
+    for (auto &state : allInitStates)
+    {
+        if (state->handValuePlayer == 21)
             continue;
         int bestAction;
         double bestQVal = -DBL_MAX;
-        for(auto& action: state->allActions) {
-            if(state->Qvalmap[action].first > bestQVal) {
+        for (auto &action : state->allActions)
+        {
+            if (state->Qvalmap[action].first > bestQVal)
+            {
                 bestQVal = state->Qvalmap[action].first;
                 bestAction = action;
             }
         }
         int row = getRow(state);
         string rowName = getRowName(state);
-        policyArray[row][state->handValueDealer-2] = getActionChar(bestAction);
+        policyArray[row][state->handValueDealer - 2] = getActionChar(bestAction);
         rowNames[row] = rowName;
     }
 
     ofstream policyFile("Policy.txt");
-    for(int i = 0; i < 33; i++) {
+    for (int i = 0; i < 33; i++)
+    {
         policyFile << rowNames[i] << "\t";
-        for(int j = 0; j < 10; j++) {
-            if(j == 9)
+        for (int j = 0; j < 10; j++)
+        {
+            if (j == 9)
                 policyFile << policyArray[i][j];
             else
                 policyFile << policyArray[i][j] << " ";
         }
-        if(i != 32)
+        if (i != 32)
             policyFile << endl;
     }
     policyFile.close();
 }
 
-
 void BlackJackAgent::executeValueIteration()
 {
-     /*initialise V to 0 for non-terminal states*/
-     for (auto &playerState : keyToState)
-     {
-         playerState.second->stateValue.first = 0; /*old player state value init 0*/
-         for(auto&action:playerState.second->allActions){
-             playerState.second->Qvalmap[action].first = 0;
-         }
-     }
-     for (auto &dealerState : keyToStateDealer)
-     {
-         dealerState.second->stateValue.first = 0; /*old dealer state value init 0*/
-         for(auto&action:dealerState.second->allActions){
-             dealerState.second->Qvalmap[action].first = 0;
-         }
-     }
+    /*initialise V to 0 for non-terminal states*/
+    for (auto &playerState : keyToState)
+    {
+        playerState.second->stateValue.first = 0; /*old player state value init 0*/
+        for (auto &action : playerState.second->allActions)
+        {
+            playerState.second->Qvalmap[action].first = 0;
+        }
+    }
+    for (auto &dealerState : keyToStateDealer)
+    {
+        dealerState.second->stateValue.first = 0; /*old dealer state value init 0*/
+        for (auto &action : dealerState.second->allActions)
+        {
+            dealerState.second->Qvalmap[action].first = 0;
+        }
+    }
 
     /*Get Q (NEW) for all actions for all states based on V (OLD) & Q (OLD) values */
     /*Step 1: */
@@ -208,7 +222,7 @@ void BlackJackAgent::executeValueIteration()
             if (playerState.second->isTerminalState)
                 continue;
             BlackJackState *curState = playerState.second;
-            error+=abs(curState->stateValue.second - curState->stateValue.first);
+            error += abs(curState->stateValue.second - curState->stateValue.first);
             curState->stateValue.first = curState->stateValue.second;
             for (auto &action : curState->allActions)
             {
@@ -218,18 +232,18 @@ void BlackJackAgent::executeValueIteration()
         for (auto &dealerState : keyToStateDealer)
         {
             BlackJackState *curState = dealerState.second;
-            error+=abs(curState->stateValue.second - curState->stateValue.first);
+            error += abs(curState->stateValue.second - curState->stateValue.first);
             curState->stateValue.first = curState->stateValue.second;
             for (auto &action : curState->allActions)
             {
                 curState->Qvalmap[action].first = curState->Qvalmap[action].second;
             }
         }
-        cerr<<"OUTPUT ERROR:"<<error<<"\n";
+        cerr << "OUTPUT ERROR:" << error << "\n";
     }
 }
 
-void BlackJackAgent::createNextDealerState(BlackJackState *parentState, int newDealerHand, bool isBlackJackDealer, int AceStateChild, double probChildState, bool isPlayerStand=false)
+void BlackJackAgent::createNextDealerState(BlackJackState *parentState, int newDealerHand, bool isBlackJackDealer, int AceStateChild, double probChildState, bool isPlayerStand = false)
 {
     // newdDealerHand <= 21 always, busts are handled in executeMove
     //key: playerHandValue + "$"+ IsPlayerBlackJack + "$" + DealerHandValue + "$" + AceStateDealer
@@ -237,14 +251,14 @@ void BlackJackAgent::createNextDealerState(BlackJackState *parentState, int newD
     {
         if (parentState->isBlackjackPlayer())
         {
-            if(isPlayerStand)
+            if (isPlayerStand)
                 parentState->standChildren.emplace_back(make_pair(keyToState["0"], probChildState));
             else
                 parentState->children.emplace_back(make_pair(keyToState["0"], probChildState));
         }
         else
         {
-            if(isPlayerStand)
+            if (isPlayerStand)
                 parentState->standChildren.emplace_back(make_pair(keyToState["-1"], probChildState));
             else
                 parentState->children.emplace_back(make_pair(keyToState["-1"], probChildState));
@@ -255,8 +269,8 @@ void BlackJackAgent::createNextDealerState(BlackJackState *parentState, int newD
     string key = to_string(parentState->handValuePlayer) + "$" + to_string(parentState->isBlackjackPlayer()) + "$" + to_string(newDealerHand) + "$" + to_string(AceStateChild);
     if (keyToStateDealer.count(key))
     {
-//        keyToStateDealer[key]->isVisited = true;
-        if(isPlayerStand)
+        //        keyToStateDealer[key]->isVisited = true;
+        if (isPlayerStand)
             parentState->standChildren.emplace_back(make_pair(keyToStateDealer[key], probChildState));
         else
             parentState->children.emplace_back(make_pair(keyToStateDealer[key], probChildState));
@@ -271,7 +285,7 @@ void BlackJackAgent::createNextDealerState(BlackJackState *parentState, int newD
         nextState->AceStateDealer = AceStateChild;
         nextState->AceStatePlayer = parentState->AceStatePlayer;
         keyToStateDealer[key] = nextState;
-        if(isPlayerStand)
+        if (isPlayerStand)
             parentState->standChildren.emplace_back(make_pair(nextState, probChildState));
         else
             parentState->children.emplace_back(make_pair(nextState, probChildState));
@@ -283,7 +297,7 @@ void BlackJackAgent::createNextPlayerState(BlackJackState *parentState, int newP
     string key = to_string(AceStateChild) + "$" + to_string(isPairChild) + "$" + to_string(newPlayerHand) + "$" + to_string(parentState->handValueDealer);
     if (keyToState.count(key))
     {
-//        keyToState[key]->isVisited = true;
+        //        keyToState[key]->isVisited = true;
         parentState->children.emplace_back(make_pair(keyToState[key], probChildState));
     }
     else
@@ -406,7 +420,7 @@ void BlackJackAgent::executeMove(BlackJackState *curState, int action, int Playe
                             probChildState = probCardNonFace;
                         }
                         if (curState->isBlackjackPlayer())
-                            curState->standChildren.emplace_back(make_pair(keyToState["15"],probChildState));
+                            curState->standChildren.emplace_back(make_pair(keyToState["15"], probChildState));
                         else
                             createNextDealerState(curState, curState->handValueDealer + next_card, false, NO_ACE, probChildState, true);
                     }
@@ -434,29 +448,35 @@ void BlackJackAgent::executeMove(BlackJackState *curState, int action, int Playe
         }
         else if (action == SPLIT_ACE)
         {
-            for(int card = 2; card <= 11; card++) {
+            for (int card = 2; card <= 11; card++)
+            {
                 int AceState = SOFT_HAND;
                 int isPair = false;
                 int newPlayerHand = 11;
-                if(card == 10) {
+                if (card == 10)
+                {
                     AceState = NO_ACE;
                     newPlayerHand += card;
                 }
-                else if(card == 11) {
+                else if (card == 11)
+                {
                     isPair = true;
                     newPlayerHand += 1;
                 }
-                else {
+                else
+                {
                     newPlayerHand += card;
                 }
                 string key = to_string(AceState) + "$" + to_string(isPair) + "$" + to_string(newPlayerHand) + "$" + to_string(curState->handValueDealer);
-                if (card != 10) {
+                if (card != 10)
+                {
                     key += "$init";
                     curState->splitAceChildren.emplace_back(make_pair(keyToState[key], probCardNonFace));
                 }
                 else
                 {
-                    if(keyToState.count(key) == 0) {
+                    if (keyToState.count(key) == 0)
+                    {
                         auto child = new BlackJackState();
                         child->isVisited = false;
                         child->handValueDealer = curState->handValueDealer;
@@ -474,11 +494,12 @@ void BlackJackAgent::executeMove(BlackJackState *curState, int action, int Playe
         }
         else if (action == SPLIT)
         {
-            for(int card = 2; card <= 11; card++) {
+            for (int card = 2; card <= 11; card++)
+            {
                 int AceState = NO_ACE;
                 int isPair = false;
-                int newPlayerHand = curState->handValuePlayer/2;
-                if(card == 11)
+                int newPlayerHand = curState->handValuePlayer / 2;
+                if (card == 11)
                     AceState = SOFT_HAND;
                 if (card == newPlayerHand)
                     isPair = true;
@@ -705,7 +726,7 @@ void BlackJackAgent::constructPolicyGraph()
 
 void BlackJackAgent::constructStateSpace(BlackJackState *curState, int PlayerID)
 {
-    if(curState->isVisited)
+    if (curState->isVisited)
         return;
     curState->isVisited = true;
 
@@ -714,13 +735,13 @@ void BlackJackAgent::constructStateSpace(BlackJackState *curState, int PlayerID)
     for (int action : curState->allActions)
         executeMove(curState, action, PlayerID);
 
-    for (auto& child : curState->children)
+    for (auto &child : curState->children)
     {
         if (!child.first->isVisited)
             constructStateSpace(child.first, PlayerID);
     }
 
-    for (auto& child : curState->standChildren)
+    for (auto &child : curState->standChildren)
     {
         if (!child.first->isVisited)
             constructStateSpace(child.first, DEALER);

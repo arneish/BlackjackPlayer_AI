@@ -1,0 +1,1 @@
+./BlackJack $1

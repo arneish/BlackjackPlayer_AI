@@ -12,11 +12,9 @@ int main(int argc, char* argv[]) {
         cerr << "Run with 1 argument" << endl;
         exit(1);
     }
-
     BlackJackAgent agent(atof(argv[1]));
     agent.constructPolicyGraph();
     agent.executeValueIteration();
     agent.printPolicy();
-
     return 0;
 }

@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <assert.h>
+using namespace std;
 
 #define HIT 1
 #define STAND 2
@@ -18,12 +19,9 @@
 #define SOFT_HAND 1
 #define HARD_HAND 2
 
-
-using namespace std;
-
 class BlackJackState
 {
-public:
+  public:
     int isPair;
     int handValuePlayer;
     int AceStatePlayer;
@@ -33,13 +31,13 @@ public:
     bool isTerminalState;
     bool isVisited;
     bool isBlackJackPlayer;
-    vector<pair<BlackJackState*, double>> children;
-    vector<pair<BlackJackState*, double>> standChildren;
-    vector<pair<BlackJackState*, double>> splitChildren;
-    vector<pair<BlackJackState*, double>> splitAceChildren;
+    vector<pair<BlackJackState *, double>> children;
+    vector<pair<BlackJackState *, double>> standChildren;
+    vector<pair<BlackJackState *, double>> splitChildren;
+    vector<pair<BlackJackState *, double>> splitAceChildren;
     vector<int> allActions;
     double rewardOnReachingState;
-    pair<double,double> stateValue; //<oldStateval, newStateval>
+    pair<double, double> stateValue;                  //<oldStateval, newStateval>
     unordered_map<int, pair<double, double>> Qvalmap; //<action,<old_Qval_action, new_Qval_action>>
 
     bool isBlackjackPlayer();
@@ -50,11 +48,11 @@ public:
 
 class BlackJackAgent
 {
-public:
+  public:
     double probability;
-    unordered_map<string, BlackJackState*> keyToState;
-    unordered_map<string, BlackJackState*> keyToStateDealer;
-    unordered_set<BlackJackState*> allInitStates;
+    unordered_map<string, BlackJackState *> keyToState;
+    unordered_map<string, BlackJackState *> keyToStateDealer;
+    unordered_set<BlackJackState *> allInitStates;
 
     void constructPolicyGraph();
     void initStates(int NumAces, int NumPairs, int player_it);
@@ -62,12 +60,12 @@ public:
     void constructStateSpace(BlackJackState *curState, int PlayerID);
     void createNextDealerState(BlackJackState *parentState, int newDealerHand, bool isBlackJack, int AceStateChild, double probChildState, bool isPlayerStand);
     void createNextPlayerState(BlackJackState *curState, int newPlayerHand, int AceStateChild, int isPairChild, double probChildState);
-    void executeMove(BlackJackState* curState,int action, int PlayerID);
+    void executeMove(BlackJackState *curState, int action, int PlayerID);
     void getPossibleActions(BlackJackState *curState, int PlayerID);
     void executeValueIteration();
     void printPolicy();
     char getActionChar(int action);
-    int getRow(BlackJackState* initState);
-    string getRowName(BlackJackState* state);
+    int getRow(BlackJackState *initState);
+    string getRowName(BlackJackState *state);
     BlackJackAgent(double p) : probability(p) {}
 };
