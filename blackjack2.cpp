@@ -715,7 +715,7 @@ void BlackJackAgent::createTerminalStates()
         }
         else if (key == "-1")
         {
-            terminalState->rewardOnReachingState = -1.5;
+            terminalState->rewardOnReachingState = -1;
         }
         keyToState[key] = terminalState;
     }
